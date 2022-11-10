@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package sensor;
+
+service DataHandler {
+    rpc sendData (SensorData) returns (Status) {}
+}
+
+message SensorData {
+    float temperature = 1;
+    int32 pressure = 2;
+    int32 humidity = 3;
+}
+
+message Status {
+    bool ok = 1;
+}
