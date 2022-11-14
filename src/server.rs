@@ -27,7 +27,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let addr = "[::1]:50051".parse().unwrap();
     let handler = RealDataHandler::default();
 
-    println!("GreeterServer listening on {}", addr);
+    println!("RealDataHandler listening on {}", addr);
 
     tonic::transport::Server::builder()
         .add_service(DataHandlerServer::new(handler))
