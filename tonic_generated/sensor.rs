@@ -8,9 +8,16 @@ pub struct SensorData {
     pub humidity: i32,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
+pub struct SensorDataPackages {
+    #[prost(message, repeated, tag = "1")]
+    pub packages: ::prost::alloc::vec::Vec<SensorData>,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Status {
     #[prost(bool, tag = "1")]
     pub ok: bool,
+    #[prost(string, tag = "2")]
+    pub description: ::prost::alloc::string::String,
 }
 /// Generated client implementations.
 pub mod data_handler_client {
@@ -100,6 +107,25 @@ pub mod data_handler_client {
             );
             self.inner.unary(request.into_request(), path, codec).await
         }
+        pub async fn get_last_five_data_packages(
+            &mut self,
+            request: impl tonic::IntoRequest<()>,
+        ) -> Result<tonic::Response<super::SensorDataPackages>, tonic::Status> {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/sensor.DataHandler/getLastFiveDataPackages",
+            );
+            self.inner.unary(request.into_request(), path, codec).await
+        }
     }
 }
 /// Generated server implementations.
@@ -113,6 +139,10 @@ pub mod data_handler_server {
             &self,
             request: tonic::Request<super::SensorData>,
         ) -> Result<tonic::Response<super::Status>, tonic::Status>;
+        async fn get_last_five_data_packages(
+            &self,
+            request: tonic::Request<()>,
+        ) -> Result<tonic::Response<super::SensorDataPackages>, tonic::Status>;
     }
     #[derive(Debug)]
     pub struct DataHandlerServer<T: DataHandler> {
@@ -198,6 +228,41 @@ pub mod data_handler_server {
                     let fut = async move {
                         let inner = inner.0;
                         let method = sendDataSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/sensor.DataHandler/getLastFiveDataPackages" => {
+                    #[allow(non_camel_case_types)]
+                    struct getLastFiveDataPackagesSvc<T: DataHandler>(pub Arc<T>);
+                    impl<T: DataHandler> tonic::server::UnaryService<()>
+                    for getLastFiveDataPackagesSvc<T> {
+                        type Response = super::SensorDataPackages;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(&mut self, request: tonic::Request<()>) -> Self::Future {
+                            let inner = self.0.clone();
+                            let fut = async move {
+                                (*inner).get_last_five_data_packages(request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = getLastFiveDataPackagesSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(

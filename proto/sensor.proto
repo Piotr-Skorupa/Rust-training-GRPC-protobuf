@@ -1,9 +1,12 @@
 syntax = "proto3";
 
+import "google/protobuf/empty.proto";
+
 package sensor;
 
 service DataHandler {
     rpc sendData (SensorData) returns (Status) {}
+    rpc getLastFiveDataPackages(google.protobuf.Empty) returns (SensorDataPackages) {}
 }
 
 message SensorData {
@@ -12,6 +15,11 @@ message SensorData {
     int32 humidity = 3;
 }
 
+message SensorDataPackages {
+    repeated SensorData packages = 1;
+}
+
 message Status {
     bool ok = 1;
+    string description = 2;
 }
