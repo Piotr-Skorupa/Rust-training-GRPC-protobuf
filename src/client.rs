@@ -25,9 +25,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 if line == String::from("q") {
                     println!("Exit");
                     continue;
-                }
-
-                if line == String::from("get") {
+                } else if line == String::from("get") {
                     let response = client.get_last_five_data_packages(tonic::Request::<()>::new(())).await?;
                     println!("Last 5 data packages: {:?}", response.get_ref());
                     continue;
@@ -38,17 +36,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 println!("{:?}", splitted);
 
                 let Ok(temperature) = splitted[0].parse::<f32>() else {
-                    eprintln!("Parsing error. Please type correct value!");
+                    eprintln!("Temperature parsing error. Please type correct value!");
                     continue;
                 };
 
                 let Ok(pressure) = splitted[0].parse::<i32>() else {
-                    eprintln!("Parsing error. Please type correct value!");
+                    eprintln!("Pressure parsing error. Please type correct value!");
                     continue;
                 };
 
                 let Ok(humidity) = splitted[0].parse::<i32>() else {
-                    eprintln!("Parsing error. Please type correct value!");
+                    eprintln!("Humidity parsing error. Please type correct value!");
                     continue;
                 };
 
