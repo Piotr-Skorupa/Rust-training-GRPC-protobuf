@@ -24,41 +24,39 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 line = line.replace(",", ".");
                 if line == String::from("q") {
                     println!("Exit");
-                    continue;
                 } else if line == String::from("get") {
                     let response = client.get_last_five_data_packages(tonic::Request::<()>::new(())).await?;
                     println!("Last 5 data packages: {:?}", response.get_ref());
-                    continue;
+                } else {
+                    println!("Processing line: {}", line);
+                    let splitted = line.split(";").collect::<Vec<&str>>();
+                    println!("{:?}", splitted);
+
+                    let Ok(temperature) = splitted[0].parse::<f32>() else {
+                        eprintln!("Temperature parsing error. Please type correct value!");
+                        continue;
+                    };
+
+                    let Ok(pressure) = splitted[0].parse::<i32>() else {
+                        eprintln!("Pressure parsing error. Please type correct value!");
+                        continue;
+                    };
+
+                    let Ok(humidity) = splitted[0].parse::<i32>() else {
+                        eprintln!("Humidity parsing error. Please type correct value!");
+                        continue;
+                    };
+
+                    let request = tonic::Request::new(SensorData {
+                        temperature: temperature,
+                        pressure: pressure,
+                        humidity: humidity
+                    });
+
+                    println!("Trying to send request: {:?}", request.get_ref());
+                    let response = client.send_data(request).await?;
+                    println!("Response: {:?}", response);
                 }
-
-                println!("Processing line: {}", line);
-                let splitted = line.split(";").collect::<Vec<&str>>();
-                println!("{:?}", splitted);
-
-                let Ok(temperature) = splitted[0].parse::<f32>() else {
-                    eprintln!("Temperature parsing error. Please type correct value!");
-                    continue;
-                };
-
-                let Ok(pressure) = splitted[0].parse::<i32>() else {
-                    eprintln!("Pressure parsing error. Please type correct value!");
-                    continue;
-                };
-
-                let Ok(humidity) = splitted[0].parse::<i32>() else {
-                    eprintln!("Humidity parsing error. Please type correct value!");
-                    continue;
-                };
-
-                let request = tonic::Request::new(SensorData {
-                    temperature: temperature,
-                    pressure: pressure,
-                    humidity: humidity
-                });
-
-                println!("Trying to send request: {:?}", request.get_ref());
-                let response = client.send_data(request).await?;
-                println!("Response: {:?}", response);
             },
             Err(_error) => {
                 exit(ABORT_CODE);
